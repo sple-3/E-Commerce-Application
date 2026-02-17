@@ -2,10 +2,10 @@
 -- USERS
 -- ======================
 
-INSERT INTO users (user_id, email, first_name, last_name, mobile_number, password)
+INSERT INTO users (email, first_name, last_name, mobile_number, password)
 VALUES 
-(1, 'admin@email.com', 'Admin', 'System', '0811111111', '$2a$12$V7nel6c9aTF7CWBJGz1kg.24a5AlYDmCVq/kWei4TzW4lGWRJz/H2'),
-(2, 'user@email.com', 'John', 'Doe', '0822222222', '$2a$12$.wR9hm.IX/33ypPFurARx.52cCbH6w7k3YDvXnE..ph342TvQlrF6');
+('admin@gmail.com', 'Admin', 'System', '0811111111', '$2a$12$V7nel6c9aTF7CWBJGz1kg.24a5AlYDmCVq/kWei4TzW4lGWRJz/H2'),
+('user@gmail.com', 'John', 'Doe', '0822222222', '$2a$12$.wR9hm.IX/33ypPFurARx.52cCbH6w7k3YDvXnE..ph342TvQlrF6');
 
 -- ======================
 -- USER
@@ -24,22 +24,22 @@ VALUES
 INSERT INTO user_role (user_id, role_id)
 SELECT u.user_id, 101
 FROM users u
-WHERE u.email = 'admin@webshop.com';
+WHERE u.email = 'admin@gmail.com';
 
 INSERT INTO user_role (user_id, role_id)
 SELECT u.user_id, 102
 FROM users u
-WHERE u.email = 'user@webshop.com';
+WHERE u.email = 'user@gmail.com';
 
 
 -- ======================
 -- CATEGORY
 -- ======================
 
-INSERT INTO categories (category_id, category_name)
+INSERT INTO categories (category_name)
 VALUES 
-(1, 'Electronics'),
-(2, 'Fashion');
+('Electronics'),
+('Fashion');
 
 
 -- ======================
@@ -47,41 +47,69 @@ VALUES
 -- ======================
 
 INSERT INTO products 
-(product_id, description, discount, image, price, product_name, quantity, special_price, category_id)
+(description, discount, image, price, product_name, quantity, special_price, category_id)
 VALUES
-(1, 'Gaming Laptop High Performance', 10, 'laptop.jpg', 15000000, 'Gaming Laptop', 10, 13500000, 1),
-(2, 'Wireless Mouse RGB', 5, 'mouse.jpg', 300000, 'Wireless Mouse', 50, 285000, 1),
-(3, 'Casual T-Shirt Cotton', 0, 'shirt.jpg', 150000, 'T-Shirt', 100, 150000, 2);
+('Gaming Laptop High Performance', 10, 'laptop.jpg', 15000000, 'Gaming Laptop', 10, 13500000, 1),
+('Wireless Mouse RGB', 5, 'mouse.jpg', 300000, 'Wireless Mouse', 50, 285000, 1),
+('Casual T-Shirt Cotton', 0, 'shirt.jpg', 150000, 'T-Shirt', 100, 150000, 2);
 
 
 -- ======================
 -- PAYMENTS
 -- ======================
 
-INSERT INTO payments (payment_id, payment_method)
+INSERT INTO payments (payment_method)
 VALUES
-(1, 'COD'),
-(2, 'BANK_TRANSFER'),
-(3, 'CREDIT_CARD');
+('CASH_ON_DELIVERY'),
+('BANK_TRANSFER'),
+('CREDIT_CARD');
 
 
 -- ======================
 -- CART
 -- ======================
 
-INSERT INTO carts (cart_id, total_price, user_id)
+INSERT INTO carts (total_price, user_id)
 VALUES
-(1, 0, 2);
+(27000000, 2);
 
+-- ======================
+-- CART ITEMS
+-- ======================
+
+INSERT INTO cart_items (discount, product_price, quantity, cart_id, product_id)
+VALUES
+(10, 15000000, 2, 1, 1);
+
+-- ======================
+-- orders
+-- ======================
+
+INSERT INTO orders (email, order_date, order_status, total_amount, payment_id)
+VALUES
+('user@gmail.com', '2026-02-17', 'Order Accepted !', 27000000, 2);
+
+-- ======================
+-- ORDER ITEMS
+-- ======================
+
+INSERT INTO order_items (discount, ordered_product_price, quantity, order_id, product_id)
+VALUES
+(10, 15000000, 2, 1, 1);
 
 -- ======================
 -- ADDRESSES
 -- ======================
 
-INSERT INTO addresses (address_id, building_name, city, country, pincode, state, street)
+INSERT INTO addresses (building_name, city, country, pincode, state, street)
 VALUES
-(1, 'Green Residence', 'Jakarta', 'Indonesia', '12345', 'DKI Jakarta', 'Jl. Sudirman');
+('Green Residence', 'Jakarta', 'Indonesia', '12345', 'DKI Jakarta', 'Jl. Sudirman');
 
 INSERT INTO user_address (user_id, address_id)
 VALUES
 (2, 1);
+
+-- ============================================
+-- RESET ALL SEQUENCES
+-- ============================================
+-- ALTER SEQUENCE products_seq RESTART WITH 4;
