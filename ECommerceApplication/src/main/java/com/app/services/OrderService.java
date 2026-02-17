@@ -1,7 +1,6 @@
 package com.app.services;
-
 import java.util.List;
-
+import com.app.payloads.CreditCardDTO;
 import com.app.payloads.OrderDTO;
 import com.app.payloads.OrderResponse;
 
@@ -9,9 +8,13 @@ public interface OrderService {
 	
 	OrderDTO placeOrder(String email, Long cartId, String paymentMethod);
 	
+	OrderDTO placeOrderWithCreditCard(String email, Long cartId, CreditCardDTO creditCard);
+	
 	OrderDTO getOrder(String email, Long orderId);
 	
 	List<OrderDTO> getOrdersByUser(String email);
+	
+	OrderResponse getOrdersByUserPaginated(String email, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 	
 	OrderResponse getAllOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 	

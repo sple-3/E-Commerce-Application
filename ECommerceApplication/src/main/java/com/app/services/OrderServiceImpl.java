@@ -21,6 +21,7 @@ import com.app.entites.Payment;
 import com.app.entites.Product;
 import com.app.exceptions.APIException;
 import com.app.exceptions.ResourceNotFoundException;
+import com.app.payloads.CreditCardDTO;
 import com.app.payloads.OrderDTO;
 import com.app.payloads.OrderItemDTO;
 import com.app.payloads.OrderResponse;
@@ -131,6 +132,19 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	public OrderDTO placeOrderWithCreditCard(String email, Long cartId, CreditCardDTO creditCard) {
+		// Simple validation for credit card (mock)
+		if (creditCard.getCardNumber() == null || creditCard.getCardNumber().length() < 16) {
+			throw new APIException("Invalid credit card number");
+		}
+		if (creditCard.getCvv() == null || creditCard.getCvv().length() != 3) {
+			throw new APIException("Invalid CVV");
+		}
+		// Mock processing: assume payment is successful
+		return placeOrder(email, cartId, "CREDIT_CARD");
+	}
+
+	@Override
 	public List<OrderDTO> getOrdersByUser(String email) {
 		List<Order> orders = orderRepo.findAllByEmail(email);
 
@@ -142,6 +156,36 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		return orderDTOs;
+	}
+
+	@Override
+	public OrderResponse getOrdersByUserPaginated(String email, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+		Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+
+		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+
+		Page<Order> pageOrders = orderRepo.findAllByEmail(email, pageDetails);
+
+		List<Order> orders = pageOrders.getContent();
+
+		if (orders.size() == 0) {
+			throw new APIException("No orders placed yet by the user with email: " + email);
+		}
+
+		List<OrderDTO> orderDTOs = orders.stream().map(order -> modelMapper.map(order, OrderDTO.class))
+				.collect(Collectors.toList());
+
+		OrderResponse orderResponse = new OrderResponse();
+
+		orderResponse.setContent(orderDTOs);
+		orderResponse.setPageNumber(pageOrders.getNumber());
+		orderResponse.setPageSize(pageOrders.getSize());
+		orderResponse.setTotalElements(pageOrders.getTotalElements());
+		orderResponse.setTotalPages(pageOrders.getTotalPages());
+		orderResponse.setLastPage(pageOrders.isLast());
+
+		return orderResponse;
 	}
 
 	@Override

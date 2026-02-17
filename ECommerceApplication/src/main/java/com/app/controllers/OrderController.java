@@ -9,14 +9,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.config.AppConstants;
+import com.app.payloads.CreditCardDTO;
 import com.app.payloads.OrderDTO;
 import com.app.payloads.OrderResponse;
 import com.app.services.OrderService;
+import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -54,6 +57,19 @@ public class OrderController {
 		return new ResponseEntity<List<OrderDTO>>(orders, HttpStatus.FOUND);
 	}
 	
+	@GetMapping("public/users/{email}/orders/paginated")
+	public ResponseEntity<OrderResponse> getOrdersByUserPaginated(
+			@PathVariable String email,
+			@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+			@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+			@RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_ORDERS_BY, required = false) String sortBy,
+			@RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+		
+		OrderResponse orderResponse = orderService.getOrdersByUserPaginated(email, pageNumber, pageSize, sortBy, sortOrder);
+
+		return new ResponseEntity<OrderResponse>(orderResponse, HttpStatus.FOUND);
+	}
+	
 	@GetMapping("public/users/{email}/orders/{orderId}")
 	public ResponseEntity<OrderDTO> getOrderByUser(@PathVariable String email, @PathVariable Long orderId) {
 		OrderDTO order = orderService.getOrder(email, orderId);
@@ -66,6 +82,13 @@ public class OrderController {
 		OrderDTO order = orderService.updateOrder(email, orderId, orderStatus);
 		
 		return new ResponseEntity<OrderDTO>(order, HttpStatus.OK);
+	}
+	
+	@PostMapping("/public/users/{email}/carts/{cartId}/credit-card/order")
+	public ResponseEntity<OrderDTO> orderProductsWithCreditCard(@PathVariable String email, @PathVariable Long cartId, @Valid @RequestBody CreditCardDTO creditCard) {
+		OrderDTO order = orderService.placeOrderWithCreditCard(email, cartId, creditCard);
+		
+		return new ResponseEntity<OrderDTO>(order, HttpStatus.CREATED);
 	}
 
 }
