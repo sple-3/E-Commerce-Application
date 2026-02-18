@@ -1,6 +1,5 @@
 package com.app.entites;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,7 +25,8 @@ public class Payment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long paymentId;
 
-	@OneToOne(mappedBy = "payment", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@OneToOne
+	@JoinColumn(name = "order_id")
 	private Order order;
 
 	@NotBlank
@@ -36,5 +36,7 @@ public class Payment {
 	@ManyToOne
 	@JoinColumn(name = "bank_id")
 	private Bank bank;
+
+	private String PromoCode;
 
 }

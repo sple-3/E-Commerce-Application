@@ -5,7 +5,8 @@
 INSERT INTO users (email, first_name, last_name, mobile_number, password)
 VALUES 
 ('admin@gmail.com', 'Admin', 'System', '0811111111', '$2a$12$V7nel6c9aTF7CWBJGz1kg.24a5AlYDmCVq/kWei4TzW4lGWRJz/H2'),
-('user@gmail.com', 'John', 'Doe', '0822222222', '$2a$12$.wR9hm.IX/33ypPFurARx.52cCbH6w7k3YDvXnE..ph342TvQlrF6');
+('user@gmail.com', 'John', 'Doe', '0822222222', '$2a$12$.wR9hm.IX/33ypPFurARx.52cCbH6w7k3YDvXnE..ph342TvQlrF6'),
+('user2@gmail.com', 'Usman', 'James', '081234567', '$2a$12$h1F0kFipA/FV53xPG4SaHOOL4.ljpjD6.Wj/UQpVAdHMdK8ouDfLG');
 
 -- ======================
 -- USER
@@ -53,17 +54,14 @@ VALUES
 ('Wireless Mouse RGB', 5, 'mouse.jpg', 300000, 'Wireless Mouse', 50, 285000, 1),
 ('Casual T-Shirt Cotton', 0, 'shirt.jpg', 150000, 'T-Shirt', 100, 150000, 2);
 
-
 -- ======================
--- PAYMENTS
+-- BANK
 -- ======================
 
-INSERT INTO payments (payment_method)
+Insert INTO bank (account_number, bank_name)
 VALUES
-('CASH_ON_DELIVERY'),
-('BANK_TRANSFER'),
-('CREDIT_CARD');
-
+('1111111111', 'BCA'),
+('2222222222', 'MANDIRI');
 
 -- ======================
 -- CART
@@ -85,9 +83,10 @@ VALUES
 -- orders
 -- ======================
 
-INSERT INTO orders (email, order_date, order_status, total_amount, payment_id)
+INSERT INTO orders (email, order_date, order_status, total_amount)
 VALUES
-('user@gmail.com', '2026-02-17', 'Order Accepted !', 27000000, 2);
+('user@gmail.com', '2026-02-17', 'Order Accepted !', 27000000),
+('user2@gmail.com', '2026-02-17', 'Order Accepted !', 285000);
 
 -- ======================
 -- ORDER ITEMS
@@ -95,7 +94,25 @@ VALUES
 
 INSERT INTO order_items (discount, ordered_product_price, quantity, order_id, product_id)
 VALUES
-(10, 15000000, 2, 1, 1);
+(10, 15000000, 2, 1, 1),
+(5, 300000, 1, 2, 2);
+
+-- ======================
+-- PROMO
+-- ======================
+
+INSERT INTO promo (promo_code, discount)
+VALUES
+('GEBYAR20', 20),
+('TIGA5', 35);
+
+-- ======================
+-- PAYMENTS
+-- ======================
+
+INSERT INTO payments (payment_method, bank_id, order_id)
+VALUES
+('BANK_TRANSFER', 1, 1);
 
 -- ======================
 -- ADDRESSES
