@@ -5,7 +5,7 @@
 INSERT INTO users (email, first_name, last_name, mobile_number, password)
 VALUES 
 ('admin@gmail.com', 'Admin', 'System', '0811111111', '$2a$12$V7nel6c9aTF7CWBJGz1kg.24a5AlYDmCVq/kWei4TzW4lGWRJz/H2'),
-('user@gmail.com', 'John', 'Doe', '0822222222', '$2a$12$.wR9hm.IX/33ypPFurARx.52cCbH6w7k3YDvXnE..ph342TvQlrF6');
+('user@gmail.com', 'John', 'Doe', '0822222222', '$2a$12$ive/2ON.wAJJ13x7hrYca.rAvHSKJx2gR4Brz1d35V.neydZTgbaC'); -- 123456
 
 -- ======================
 -- USER
@@ -63,6 +63,17 @@ VALUES
 ('CASH_ON_DELIVERY'),
 ('BANK_TRANSFER'),
 ('CREDIT_CARD');
+
+-- ======================
+-- MEMBERSHIPS
+-- ======================
+
+INSERT INTO memberships (code, discount_percent, active)
+VALUES
+('MEMBER10', 10, true),
+('MEMBER15', 15, true),
+('MEMBER20', 20, true),
+('OLDMEMBER', 5, false);
 
 
 -- ======================

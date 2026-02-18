@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.app.entites.Cart;
 import com.app.entites.CartItem;
+import com.app.entites.Membership;
 import com.app.entites.Order;
 import com.app.entites.OrderItem;
 import com.app.entites.Payment;
@@ -26,6 +27,7 @@ import com.app.payloads.OrderItemDTO;
 import com.app.payloads.OrderResponse;
 import com.app.repositories.CartItemRepo;
 import com.app.repositories.CartRepo;
+import com.app.repositories.MembershipRepo;
 import com.app.repositories.OrderItemRepo;
 import com.app.repositories.OrderRepo;
 import com.app.repositories.PaymentRepo;
@@ -56,6 +58,9 @@ public class OrderServiceImpl implements OrderService {
 	public CartItemRepo cartItemRepo;
 
 	@Autowired
+	private MembershipRepo membershipRepo;
+
+	@Autowired
 	public UserService userService;
 
 	@Autowired
@@ -65,7 +70,8 @@ public class OrderServiceImpl implements OrderService {
 	public ModelMapper modelMapper;
 
 	@Override
-	public OrderDTO placeOrder(String email, Long cartId, String paymentMethod) {
+	public OrderDTO placeOrder(String email, Long cartId, String paymentMethod, String membershipCode,
+			String codAddress) {
 
 		Cart cart = cartRepo.findCartByEmailAndCartId(email, cartId);
 
@@ -73,17 +79,58 @@ public class OrderServiceImpl implements OrderService {
 			throw new ResourceNotFoundException("Cart", "cartId", cartId);
 		}
 
+		List<CartItem> cartItems = cart.getCartItems();
+
+		if (cartItems.size() == 0) {
+			throw new APIException("Cart is empty");
+		}
+
+		Membership membership = null;
+		String sanitizedMembershipCode = null;
+		double membershipDiscountPercent = 0;
+
+		if (membershipCode != null && !membershipCode.trim().isEmpty()) {
+			sanitizedMembershipCode = membershipCode.trim();
+			membership = membershipRepo.findByCodeAndActiveTrue(sanitizedMembershipCode)
+					.orElseThrow(() -> new APIException("Invalid or inactive membership code"));
+			membershipDiscountPercent = membership.getDiscountPercent();
+		}
+
+		String normalizedPaymentMethod = paymentMethod == null ? "" : paymentMethod.trim();
+		String sanitizedCodAddress = (codAddress == null || codAddress.trim().isEmpty()) ? null : codAddress.trim();
+
+		if ("CASH_ON_DELIVERY".equalsIgnoreCase(normalizedPaymentMethod) && sanitizedCodAddress == null) {
+			throw new APIException("codAddress is required for CASH_ON_DELIVERY payment");
+		}
+
+		if (!"CASH_ON_DELIVERY".equalsIgnoreCase(normalizedPaymentMethod)) {
+			sanitizedCodAddress = null;
+		}
+
+		final double appliedMembershipDiscountPercent = membershipDiscountPercent;
+
 		Order order = new Order();
 
 		order.setEmail(email);
 		order.setOrderDate(LocalDate.now());
+		order.setMembershipCode(sanitizedMembershipCode);
+		order.setCodAddress(sanitizedCodAddress);
 
-		order.setTotalAmount(cart.getTotalPrice());
+		double totalAmount = cart.getTotalPrice();
+		if (membership != null) {
+			totalAmount = cartItems.stream().mapToDouble(item -> {
+				double basePrice = item.getProduct().getPrice();
+				double discountedPrice = basePrice - ((appliedMembershipDiscountPercent * 0.01) * basePrice);
+				return discountedPrice * item.getQuantity();
+			}).sum();
+		}
+
+		order.setTotalAmount(totalAmount);
 		order.setOrderStatus("Order Accepted !");
 
 		Payment payment = new Payment();
 		payment.setOrder(order);
-		payment.setPaymentMethod(paymentMethod);
+		payment.setPaymentMethod(normalizedPaymentMethod);
 
 		payment = paymentRepo.save(payment);
 
@@ -91,21 +138,23 @@ public class OrderServiceImpl implements OrderService {
 
 		Order savedOrder = orderRepo.save(order);
 
-		List<CartItem> cartItems = cart.getCartItems();
-
-		if (cartItems.size() == 0) {
-			throw new APIException("Cart is empty");
-		}
-
 		List<OrderItem> orderItems = new ArrayList<>();
 
 		for (CartItem cartItem : cartItems) {
 			OrderItem orderItem = new OrderItem();
+			Product product = cartItem.getProduct();
+			double orderedProductPrice = cartItem.getProductPrice();
+			double discountPercent = cartItem.getDiscount();
 
-			orderItem.setProduct(cartItem.getProduct());
+			if (membership != null) {
+				orderedProductPrice = product.getPrice() - ((appliedMembershipDiscountPercent * 0.01) * product.getPrice());
+				discountPercent = appliedMembershipDiscountPercent;
+			}
+
+			orderItem.setProduct(product);
 			orderItem.setQuantity(cartItem.getQuantity());
-			orderItem.setDiscount(cartItem.getDiscount());
-			orderItem.setOrderedProductPrice(cartItem.getProductPrice());
+			orderItem.setDiscount(discountPercent);
+			orderItem.setOrderedProductPrice(orderedProductPrice);
 			orderItem.setOrder(savedOrder);
 
 			orderItems.add(orderItem);
