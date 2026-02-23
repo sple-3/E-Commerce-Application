@@ -51,6 +51,14 @@ public class PromoServiceImpl implements PromoService {
 	}
 
 	@Override
+	public int getPromoCount(String promoCode) {
+		Promo promo = promoRepo.findById(promoCode)
+				.orElseThrow(() -> new ResourceNotFoundException("Promo", "promoCode", promoCode));
+
+		return promo.getCounter();
+	}
+
+	@Override
 	public PromoDTO updatePromo(String promoCode, Promo promo) {
 		Promo existingPromo = promoRepo.findById(promoCode)
 				.orElseThrow(() -> new ResourceNotFoundException("Promo", "promoCode", promoCode));

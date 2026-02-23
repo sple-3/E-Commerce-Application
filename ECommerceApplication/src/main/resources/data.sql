@@ -101,10 +101,10 @@ VALUES
 -- PROMO
 -- ======================
 
-INSERT INTO promo (promo_code, discount)
+INSERT INTO promo (promo_code, counter, discount)
 VALUES
-('GEBYAR20', 20),
-('TIGA5', 35);
+('GEBYAR20', 0,  20),
+('TIGA5', 0, 35);
 
 -- ======================
 -- PAYMENTS

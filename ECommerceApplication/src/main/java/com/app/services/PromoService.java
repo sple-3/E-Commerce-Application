@@ -12,6 +12,8 @@ public interface PromoService {
 	List<PromoDTO> getPromo();
 	
 	PromoDTO getPromo(String promoCode);
+
+	int getPromoCount(String promoCode);
 	
 	PromoDTO updatePromo(String promoCode, Promo promo);
 	

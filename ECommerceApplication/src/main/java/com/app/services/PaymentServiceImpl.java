@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import com.app.entites.*;
 import com.app.payloads.*;
 import com.app.repositories.*;
-import com.app.services.PaymentService;
 
 import jakarta.transaction.Transactional;
 
@@ -54,6 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             discount = (originalAmount * promo.getDiscount()) / 100.0;
             appliedPromo = promo.getPromoCode();
+            promo.setCounter(promo.getCounter() + 1);
         }
 
         // Hitung Final Amount
@@ -75,6 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setOrder(order);
         payment.setPaymentMethod(paymentDTO.getPaymentMethod());
         payment.setBank(bank);
+        payment.setPromoCode(appliedPromo);
 
         paymentRepo.save(payment);
 

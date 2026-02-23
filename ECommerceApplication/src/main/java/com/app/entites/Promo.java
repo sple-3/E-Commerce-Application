@@ -20,4 +20,6 @@ public class Promo {
 
     @NotNull
     private double discount;
+
+    private int counter;
 }

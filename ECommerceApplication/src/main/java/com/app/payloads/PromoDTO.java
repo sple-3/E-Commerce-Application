@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class PromoDTO {
     private String promoCode;
     private double discount;
+    private int counter;
 }

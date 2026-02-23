@@ -57,6 +57,15 @@ public class PromoController {
 	}
 
 	/**
+	 * Admin: Get promo count by code
+	 */
+	@GetMapping("/admin/promo/count/{promoCode}")
+	public ResponseEntity<Integer> getPromoCode(@PathVariable String promoCode) {
+		int promoCount = promoService.getPromoCount(promoCode);
+		return new ResponseEntity<>(promoCount, HttpStatus.OK);
+	}
+
+	/**
 	 * Admin: Update promo code
 	 */
 	@PutMapping("/admin/promo/{promoCode}")
