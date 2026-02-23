@@ -15,5 +15,8 @@ public class AppConstants {
 	public static final String[] PUBLIC_URLS = { "/v3/api-docs/**", "/swagger-ui/**", "/api/register/**", "/api/login" };
 	public static final String[] USER_URLS = { "/api/public/**" };
 	public static final String[] ADMIN_URLS = { "/api/admin/**" };
+	public static final double BANK_ADMIN_FEE_THRESHOLD = 1_000_000D;
+	public static final double BANK_ADMIN_FEE_BELOW_THRESHOLD = 1_000D;
+	public static final double BANK_ADMIN_FEE_AT_OR_ABOVE_THRESHOLD = 2_000D;
 	
 }

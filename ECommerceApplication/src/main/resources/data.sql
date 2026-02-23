@@ -5,8 +5,8 @@
 INSERT INTO users (email, first_name, last_name, mobile_number, password)
 VALUES 
 ('admin@gmail.com', 'Admin', 'System', '0811111111', '$2a$12$V7nel6c9aTF7CWBJGz1kg.24a5AlYDmCVq/kWei4TzW4lGWRJz/H2'),
-('user@gmail.com', 'John', 'Doe', '0822222222', '$2a$12$.wR9hm.IX/33ypPFurARx.52cCbH6w7k3YDvXnE..ph342TvQlrF6'),
-('user2@gmail.com', 'Usman', 'James', '081234567', '$2a$12$h1F0kFipA/FV53xPG4SaHOOL4.ljpjD6.Wj/UQpVAdHMdK8ouDfLG');
+('user@gmail.com', 'John', 'Doe', '0822222222', '$2a$12$nmptmSVxAjvohWqHS/XcJe0kBTKAB0CLusD7HuD945R7YNoLCJ2lO'),
+('user2@gmail.com', 'Usman', 'James', '081234567', '$2a$12$nmptmSVxAjvohWqHS/XcJe0kBTKAB0CLusD7HuD945R7YNoLCJ2lO'); -- 123456
 
 -- ======================
 -- USER

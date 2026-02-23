@@ -14,5 +14,7 @@ public class PaymentDTO {
 	private String paymentMethod;
 	private BankDTO bankDTO;
 	private String promoCode;
+	private Double adminFee;
+	private Double paidAmount;
 
 }

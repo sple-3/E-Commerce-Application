@@ -3,6 +3,7 @@ package com.app.services;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
+import com.app.config.AppConstants;
 import com.app.entites.*;
 import com.app.payloads.*;
 import com.app.repositories.*;
@@ -56,8 +57,10 @@ public class PaymentServiceImpl implements PaymentService {
             promo.setCounter(promo.getCounter() + 1);
         }
 
-        // Hitung Final Amount
+        // Hitung Final Amount + Admin Fee
         double finalAmount = originalAmount - discount;
+        double adminFee = calculateBankAdminFee(finalAmount);
+        double totalPaidAmount = finalAmount + adminFee;
 
         // Ambil Bank dari DTO
         String bankName = paymentDTO.getBankDTO().getBankName();
@@ -76,6 +79,8 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentMethod(paymentDTO.getPaymentMethod());
         payment.setBank(bank);
         payment.setPromoCode(appliedPromo);
+        payment.setAdminFee(adminFee);
+        payment.setPaidAmount(totalPaidAmount);
 
         paymentRepo.save(payment);
 
@@ -83,6 +88,8 @@ public class PaymentServiceImpl implements PaymentService {
         return new PaymentResponse(
                 appliedPromo,
                 finalAmount,
+                adminFee,
+                totalPaidAmount,
                 bank.getAccountNumber()
         );
     }
@@ -99,6 +106,8 @@ public class PaymentServiceImpl implements PaymentService {
         paymentDTO.setPaymentId(payment.getPaymentId());
         paymentDTO.setPaymentMethod(payment.getPaymentMethod());
         paymentDTO.setPromoCode(payment.getPromoCode());
+        paymentDTO.setAdminFee(payment.getAdminFee());
+        paymentDTO.setPaidAmount(payment.getPaidAmount());
 
         // Map Order ke OrderDTO
         OrderDTO orderDTO = new OrderDTO();
@@ -114,5 +123,13 @@ public class PaymentServiceImpl implements PaymentService {
         paymentDTO.setBankDTO(bankDTO);
 
         return paymentDTO;
-}
+        }
+
+        private double calculateBankAdminFee(double amountAfterDiscount) {
+                if (amountAfterDiscount < AppConstants.BANK_ADMIN_FEE_THRESHOLD) {
+                        return AppConstants.BANK_ADMIN_FEE_BELOW_THRESHOLD;
+                }
+
+                return AppConstants.BANK_ADMIN_FEE_AT_OR_ABOVE_THRESHOLD;
+        }
 }

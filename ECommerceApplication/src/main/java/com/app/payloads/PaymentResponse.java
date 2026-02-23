@@ -12,5 +12,7 @@ public class PaymentResponse {
 
 	private String promoCode;
 	private double finalAmount;
+	private double adminFee;
+	private double totalPaidAmount;
 	private String bankAccount;
 }

@@ -39,4 +39,8 @@ public class Payment {
 
 	private String PromoCode;
 
+	private Double adminFee;
+
+	private Double paidAmount;
+
 }
